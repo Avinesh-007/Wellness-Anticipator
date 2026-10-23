@@ -63,4 +63,12 @@ object ApiClient {
     }
 
     fun getBaseUrl(): String = baseUrl
+
+    fun setBaseUrl(newUrl: String, context: Context) {
+        var formatted = newUrl.trim()
+        if (!formatted.endsWith("/")) {
+            formatted += "/"
+        }
+        init(context, formatted)
+    }
 }

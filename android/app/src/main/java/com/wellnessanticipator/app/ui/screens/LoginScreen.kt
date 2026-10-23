@@ -28,6 +28,9 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var showServerDialog by remember { mutableStateOf(false) }
+    var serverUrlInput by remember { mutableStateOf(ApiClient.getBaseUrl()) }
+    val context = androidx.compose.ui.platform.LocalContext.current
     val scope = rememberCoroutineScope()
 
     Column(
@@ -136,6 +139,70 @@ fun LoginScreen(
             modifier = Modifier.padding(top = 16.dp)
         ) {
             Text("Don't have an account? Register")
+        }
+
+        TextButton(
+            onClick = {
+                serverUrlInput = ApiClient.getBaseUrl()
+                showServerDialog = true
+            },
+            modifier = Modifier.padding(top = 4.dp)
+        ) {
+            Text(
+                text = "Server: ${ApiClient.getBaseUrl()}",
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        if (showServerDialog) {
+            AlertDialog(
+                onDismissRequest = { showServerDialog = false },
+                title = { Text("Server API URL", fontSize = 16.sp, fontWeight = FontWeight.Bold) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = "USB: http://127.0.0.1:8000/api/v1/\nWi-Fi: http://172.16.41.14:8000/api/v1/",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        OutlinedTextField(
+                            value = serverUrlInput,
+                            onValueChange = { serverUrlInput = it },
+                            label = { Text("API Base URL") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FilledTonalButton(
+                                onClick = { serverUrlInput = "http://127.0.0.1:8000/api/v1/" },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("USB", fontSize = 11.sp)
+                            }
+                            FilledTonalButton(
+                                onClick = { serverUrlInput = "http://172.16.41.14:8000/api/v1/" },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Wi-Fi", fontSize = 11.sp)
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        ApiClient.setBaseUrl(serverUrlInput, context)
+                        showServerDialog = false
+                    }) {
+                        Text("Apply")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showServerDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }
