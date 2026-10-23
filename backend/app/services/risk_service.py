@@ -25,9 +25,28 @@ from app.models.measurement import Measurement
 from app.models.activity import ActivityRecord
 from app.core.logging import app_logger
 
-# Path to serialized model registry & pipeline resolved from repo root
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-MODEL_PATH = REPO_ROOT / "ml" / "models" / "serialized" / "diabetes_baseline_lr.joblib"
+# Path to serialized model registry & pipeline resolved dynamically across environments
+def get_model_path() -> Path:
+    import os
+    env_path = os.getenv("WELLNESS_MODEL_PATH")
+    if env_path and Path(env_path).exists():
+        return Path(env_path)
+    # Repo root relative
+    repo_root = Path(__file__).resolve().parent.parent.parent.parent
+    c1 = repo_root / "ml" / "models" / "serialized" / "diabetes_baseline_lr.joblib"
+    if c1.exists():
+        return c1
+    # App root relative
+    c2 = Path(__file__).resolve().parent.parent.parent / "ml" / "models" / "serialized" / "diabetes_baseline_lr.joblib"
+    if c2.exists():
+        return c2
+    # Container root relative
+    c3 = Path("/app/ml/models/serialized/diabetes_baseline_lr.joblib")
+    if c3.exists():
+        return c3
+    return c1
+
+MODEL_PATH = get_model_path()
 
 
 @dataclass
@@ -164,10 +183,11 @@ _cached_pipeline = None
 def load_screening_pipeline():
     """Loads and caches the calibrated pipeline."""
     global _cached_pipeline
-    if _cached_pipeline is None and MODEL_PATH.exists():
+    path = get_model_path()
+    if _cached_pipeline is None and path.exists():
         try:
-            _cached_pipeline = joblib.load(MODEL_PATH)
-            app_logger.info("Loaded serialized diabetes screening pipeline from %s", str(MODEL_PATH))
+            _cached_pipeline = joblib.load(path)
+            app_logger.info("Loaded serialized diabetes screening pipeline from %s", str(path))
         except Exception as e:
             app_logger.error("Failed to load model pipeline: %s", str(e))
     return _cached_pipeline
