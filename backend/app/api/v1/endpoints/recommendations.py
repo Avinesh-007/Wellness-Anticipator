@@ -3,9 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db, get_current_user
 from app.models.user import User
-from app.services.risk_service import perform_diabetes_assessment
-from app.services.trend_engine import calculate_user_trends
-from app.services.recommendation_service import generate_recommendations
+from app.services.plan_service import get_or_create_active_plan
+from app.schemas.preventive_plan import PreventivePlanResponse
 
 router = APIRouter()
 
@@ -17,14 +16,29 @@ def get_preventive_recommendations(
 ):
     """
     Retrieves tailored, evidence-informed lifestyle recommendations
-    synthesized from the user's latest assessment and 14-day longitudinal trends.
+    grounded in the user's active persistent preventive plan.
     """
-    assessment = perform_diabetes_assessment(db=db, user_id=current_user.id)
-    trends = calculate_user_trends(db=db, user_id=current_user.id, window_days=14)
-    recs = generate_recommendations(assessment_summary=assessment, trends_summary=trends)
+    plan = get_or_create_active_plan(db=db, user_id=current_user.id)
     
+    recs_list = [
+        {
+            "id": item.id,
+            "category": item.category,
+            "title": item.title,
+            "target_action": item.target_action,
+            "rationale": item.rationale,
+            "guideline_source": item.guideline_source,
+            "difficulty": item.difficulty,
+            "is_adopted_into_habit": item.is_adopted_into_habit,
+            "adopted_habit_id": item.adopted_habit_id,
+        }
+        for item in plan.items
+    ]
+
     return {
         "user_id": current_user.id,
-        "recommendations_count": len(recs),
-        "recommendations": [asdict_obj for asdict_obj in recs]
+        "plan_id": plan.id,
+        "plan_title": plan.title,
+        "recommendations_count": len(recs_list),
+        "recommendations": recs_list,
     }

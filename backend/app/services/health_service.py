@@ -7,6 +7,9 @@ from app.models.activity import ActivityRecord
 from app.models.sleep import SleepRecord
 from app.models.consent import ConsentRecord
 from app.models.clinical_profile import ClinicalProfile
+from app.models.habit import Habit, HabitLog
+from app.models.preventive_plan import PreventivePlan, PlanItem
+from app.models.wellbeing import WellbeingCheckIn
 from app.schemas.measurement import MeasurementCreate, MetricType
 from app.schemas.activity import ActivityCreate
 from app.schemas.sleep import SleepCreate
@@ -278,6 +281,10 @@ def export_all_user_data(db: Session, user: User, client_ip: Optional[str] = Non
     sleep = db.query(SleepRecord).filter(SleepRecord.user_id == user.id).all()
     consents = db.query(ConsentRecord).filter(ConsentRecord.user_id == user.id).all()
     profile = db.query(ClinicalProfile).filter(ClinicalProfile.user_id == user.id).first()
+    habits = db.query(Habit).filter(Habit.user_id == user.id).all()
+    habit_logs = db.query(HabitLog).filter(HabitLog.user_id == user.id).all()
+    plans = db.query(PreventivePlan).filter(PreventivePlan.user_id == user.id).all()
+    wellbeing = db.query(WellbeingCheckIn).filter(WellbeingCheckIn.user_id == user.id).all()
 
     payload = {
         "export_timestamp": datetime.now(timezone.utc).isoformat(),
@@ -343,6 +350,64 @@ def export_all_user_data(db: Session, user: User, client_ip: Optional[str] = Non
                 "quality_rating": s.quality_rating,
                 "source": s.source
             } for s in sleep
+        ],
+        "habits": [
+            {
+                "id": h.id,
+                "title": h.title,
+                "category": h.category,
+                "target_action": h.target_action,
+                "frequency": h.frequency,
+                "target_value": h.target_value,
+                "target_unit": h.target_unit,
+                "schedule_time": h.schedule_time,
+                "difficulty": h.difficulty,
+                "is_active": h.is_active,
+                "created_at": h.created_at.isoformat()
+            } for h in habits
+        ],
+        "habit_logs": [
+            {
+                "id": hl.id,
+                "habit_id": hl.habit_id,
+                "log_date": hl.log_date,
+                "status": hl.status,
+                "value_achieved": hl.value_achieved,
+                "notes": hl.notes,
+                "reason_missed": hl.reason_missed,
+                "logged_at": hl.logged_at.isoformat()
+            } for hl in habit_logs
+        ],
+        "preventive_plans": [
+            {
+                "id": p.id,
+                "title": p.title,
+                "status": p.status,
+                "review_period_days": p.review_period_days,
+                "created_at": p.created_at.isoformat(),
+                "items": [
+                    {
+                        "id": item.id,
+                        "category": item.category,
+                        "title": item.title,
+                        "target_action": item.target_action,
+                        "guideline_source": item.guideline_source,
+                        "is_adopted_into_habit": item.is_adopted_into_habit
+                    } for item in p.items
+                ]
+            } for p in plans
+        ],
+        "wellbeing_checkins": [
+            {
+                "id": w.id,
+                "recorded_date": w.recorded_date,
+                "mood_score": w.mood_score,
+                "stress_level": w.stress_level,
+                "energy_level": w.energy_level,
+                "sleep_perceived_quality": w.sleep_perceived_quality,
+                "reflection_notes": w.reflection_notes,
+                "created_at": w.created_at.isoformat()
+            } for w in wellbeing
         ]
     }
 

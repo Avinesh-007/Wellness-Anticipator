@@ -13,6 +13,24 @@ from app.schemas.measurement import (
 from app.schemas.activity import ActivityCreate, ActivityBatchCreate, ActivityResponse
 from app.schemas.sleep import SleepCreate, SleepResponse
 from app.schemas.export import AccountDeleteRequest, ExportSummaryResponse
+from app.schemas.habit import (
+    HabitCreate,
+    HabitUpdate,
+    HabitLogCreate,
+    HabitLogResponse,
+    HabitResponse,
+    HabitAdherenceSummary,
+)
+from app.schemas.preventive_plan import (
+    PlanItemResponse,
+    PreventivePlanResponse,
+    PlanItemAdoptRequest,
+)
+from app.schemas.wellbeing import (
+    WellbeingCheckInCreate,
+    WellbeingCheckInResponse,
+    WellbeingTrendSummary,
+)
 
 __all__ = [
     "Token",
@@ -39,4 +57,16 @@ __all__ = [
     "SleepResponse",
     "AccountDeleteRequest",
     "ExportSummaryResponse",
+    "HabitCreate",
+    "HabitUpdate",
+    "HabitLogCreate",
+    "HabitLogResponse",
+    "HabitResponse",
+    "HabitAdherenceSummary",
+    "PlanItemResponse",
+    "PreventivePlanResponse",
+    "PlanItemAdoptRequest",
+    "WellbeingCheckInCreate",
+    "WellbeingCheckInResponse",
+    "WellbeingTrendSummary",
 ]

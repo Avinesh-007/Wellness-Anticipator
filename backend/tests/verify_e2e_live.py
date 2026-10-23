@@ -191,6 +191,60 @@ def run_e2e_journey():
     for r in res["recommendations"][:2]:
         print(f"    - [{r['category']}] {r['title']}: {r['target_action']} (Basis: {r['guideline_source']})")
 
+    # 6B. Preventive Plan & Habit Adoption Loop
+    print("\n[Step 6B] Testing Persistent Preventive Plan & Habit Adoption Loop...")
+    st, plan = http_req("/plans/active", "GET", token=u1_token)
+    assert st == 200, f"Expected 200, got {st}: {plan}"
+    assert len(plan["items"]) > 0, "Plan should have synthesized items"
+    first_item = plan["items"][0]
+    print(f"  Active Plan: '{plan['title']}' with {len(plan['items'])} evidence-grounded recommendations.")
+    print(f"  Adopting Goal #{first_item['id']} ('{first_item['title']}') into Daily Habits...")
+
+    st, adopted_habit = http_req(f"/plans/items/{first_item['id']}/adopt", "POST", {
+        "schedule_time": "Morning Routine",
+        "frequency": "DAILY"
+    }, token=u1_token)
+    assert st == 200, f"Expected 200 for adopting plan item, got {st}: {adopted_habit}"
+    assert adopted_habit["title"] == first_item["title"]
+    habit_id = adopted_habit["id"]
+    print(f"  Habit successfully adopted: ID={habit_id}, Title='{adopted_habit['title']}'")
+
+    # 6C. Habit Logging & Adherence Consistency Calculation
+    print("\n[Step 6C] Testing Daily Habit Logging & Consistency Adherence Engine...")
+    st, log_res = http_req(f"/habits/{habit_id}/log", "POST", {
+        "status": "COMPLETED",
+        "notes": "Completed brisk walk before work"
+    }, token=u1_token)
+    assert st == 200, f"Expected 200 for habit logging, got {st}: {log_res}"
+    assert log_res["status"] == "COMPLETED"
+    print("  Habit status logged as COMPLETED.")
+
+    st, adh = http_req("/habits/summary/adherence", "GET", token=u1_token)
+    assert st == 200, f"Expected 200 for adherence report, got {st}: {adh}"
+    assert adh["total_active_habits"] >= 1
+    assert adh["completed_today_count"] >= 1
+    assert adh["today_completion_rate"] == 100.0
+    print(f"  Adherence Verified: 7-Day Consistency={adh['seven_day_consistency_rate']}%, Feedback='{adh['supportive_feedback']}'")
+
+    # 6D. Subjective Wellbeing Check-In
+    print("\n[Step 6D] Testing Subjective Wellbeing Check-In & Trends...")
+    st, wb = http_req("/wellbeing/", "POST", {
+        "mood_score": 4,
+        "stress_level": "LOW",
+        "energy_level": 5,
+        "sleep_perceived_quality": "EXCELLENT",
+        "reflection_notes": "Feeling focused and healthy"
+    }, token=u1_token)
+    assert st == 201, f"Expected 201 for wellbeing checkin, got {st}: {wb}"
+    assert wb["mood_score"] == 4
+    print(f"  Wellbeing Check-in Recorded: Mood={wb['mood_score']}/5, Stress={wb['stress_level']}")
+
+    st, wb_trends = http_req("/wellbeing/trends?window_days=14", "GET", token=u1_token)
+    assert st == 200, f"Expected 200 for wellbeing trends, got {st}: {wb_trends}"
+    assert wb_trends["total_checkins"] >= 1
+    assert "clinical_boundary_notice" in wb_trends
+    print(f"  Wellbeing Trends Verified: Coverage={wb_trends['coverage_percentage']}%, Avg Mood={wb_trends['average_mood']}")
+
     # 7. Consent Revocation Blocking
     print("\n[Step 7] Testing Granular Consent Governance & Write Blocking...")
     st, res = http_req("/consent/", "POST", {

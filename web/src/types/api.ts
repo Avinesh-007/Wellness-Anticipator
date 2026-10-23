@@ -173,10 +173,131 @@ export interface DiabetesAssessmentResponse {
 }
 
 export interface PreventiveRecommendation {
-  category: 'PHYSICAL_ACTIVITY' | 'NUTRITION' | 'SLEEP' | 'CLINICAL_SCREENING';
+  id?: number;
+  category: 'PHYSICAL_ACTIVITY' | 'NUTRITION' | 'SLEEP' | 'CLINICAL_SCREENING' | 'STRESS_MANAGEMENT' | string;
   title: string;
   target_action: string;
   rationale: string;
   guideline_source: string;
-  difficulty: 'EASY' | 'MODERATE' | 'ACHIEVABLE';
+  difficulty: 'EASY' | 'MODERATE' | 'ACHIEVABLE' | string;
+  is_adopted_into_habit?: boolean;
+  adopted_habit_id?: number | null;
+}
+
+export interface Habit {
+  id: number;
+  user_id: string;
+  title: string;
+  category: string;
+  target_action: string;
+  frequency: string;
+  target_value?: number | null;
+  target_unit?: string | null;
+  schedule_time?: string | null;
+  difficulty: string;
+  is_active: boolean;
+  created_at: string;
+  paused_at?: string | null;
+  completed_today: boolean;
+  today_status?: string | null;
+  seven_day_consistency_pct: number;
+}
+
+export interface HabitCreateRequest {
+  title: string;
+  category?: string;
+  target_action: string;
+  frequency?: string;
+  target_value?: number | null;
+  target_unit?: string | null;
+  schedule_time?: string | null;
+  difficulty?: string;
+}
+
+export interface HabitLogRequest {
+  log_date?: string;
+  status: 'COMPLETED' | 'PARTIAL' | 'SKIPPED';
+  value_achieved?: number | null;
+  notes?: string | null;
+  reason_missed?: string | null;
+}
+
+export interface HabitLog {
+  id: number;
+  habit_id: number;
+  user_id: string;
+  log_date: string;
+  status: string;
+  value_achieved?: number | null;
+  notes?: string | null;
+  reason_missed?: string | null;
+  logged_at: string;
+}
+
+export interface HabitAdherenceSummary {
+  total_active_habits: number;
+  completed_today_count: number;
+  today_completion_rate: number;
+  seven_day_consistency_rate: number;
+  thirty_day_consistency_rate: number;
+  supportive_feedback: string;
+  recovery_recommendation?: string | null;
+  category_breakdown: Record<string, number>;
+}
+
+export interface PlanItem {
+  id: number;
+  plan_id: number;
+  category: string;
+  title: string;
+  target_action: string;
+  rationale: string;
+  guideline_source: string;
+  difficulty: string;
+  is_adopted_into_habit: boolean;
+  adopted_habit_id?: number | null;
+}
+
+export interface PreventivePlan {
+  id: number;
+  user_id: string;
+  title: string;
+  status: string;
+  review_period_days: number;
+  created_at: string;
+  updated_at: string;
+  items: PlanItem[];
+}
+
+export interface WellbeingCheckIn {
+  id: number;
+  user_id: string;
+  recorded_date: string;
+  mood_score: number;
+  stress_level: 'LOW' | 'MODERATE' | 'HIGH' | string;
+  energy_level: number;
+  sleep_perceived_quality?: string | null;
+  reflection_notes?: string | null;
+  created_at: string;
+}
+
+export interface WellbeingCheckInRequest {
+  recorded_date?: string;
+  mood_score: number;
+  stress_level: string;
+  energy_level: number;
+  sleep_perceived_quality?: string | null;
+  reflection_notes?: string | null;
+}
+
+export interface WellbeingTrendsSummary {
+  window_days: number;
+  total_checkins: number;
+  coverage_percentage: number;
+  average_mood?: number | null;
+  average_energy?: number | null;
+  predominant_stress_level?: string | null;
+  stress_distribution: Record<string, number>;
+  recent_checkins: WellbeingCheckIn[];
+  clinical_boundary_notice: string;
 }

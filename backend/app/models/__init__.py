@@ -6,6 +6,9 @@ from app.models.measurement import Measurement
 from app.models.activity import ActivityRecord
 from app.models.sleep import SleepRecord
 from app.models.audit_log import AuditLog
+from app.models.habit import Habit, HabitLog
+from app.models.preventive_plan import PreventivePlan, PlanItem
+from app.models.wellbeing import WellbeingCheckIn
 
 __all__ = [
     "Base",
@@ -16,4 +19,9 @@ __all__ = [
     "ActivityRecord",
     "SleepRecord",
     "AuditLog",
+    "Habit",
+    "HabitLog",
+    "PreventivePlan",
+    "PlanItem",
+    "WellbeingCheckIn",
 ]

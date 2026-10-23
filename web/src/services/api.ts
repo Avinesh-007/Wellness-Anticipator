@@ -8,7 +8,16 @@ import {
   SleepRecord,
   TrendsSummaryResponse,
   DiabetesAssessmentResponse,
-  PreventiveRecommendation
+  PreventiveRecommendation,
+  Habit,
+  HabitCreateRequest,
+  HabitLogRequest,
+  HabitAdherenceSummary,
+  PreventivePlan,
+  PlanItem,
+  WellbeingCheckIn,
+  WellbeingCheckInRequest,
+  WellbeingTrendsSummary,
 } from '../types/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
@@ -210,8 +219,78 @@ export const api = {
   },
 
   // Recommendations
-  async getRecommendations(): Promise<{ user_id: string; recommendations_count: number; recommendations: PreventiveRecommendation[] }> {
-    return request<{ user_id: string; recommendations_count: number; recommendations: PreventiveRecommendation[] }>('/recommendations/');
+  async getRecommendations(): Promise<{ user_id: string; plan_id?: number; plan_title?: string; recommendations_count: number; recommendations: PreventiveRecommendation[] }> {
+    return request<{ user_id: string; plan_id?: number; plan_title?: string; recommendations_count: number; recommendations: PreventiveRecommendation[] }>('/recommendations/');
+  },
+
+  // Daily Habits & Adherence Engine
+  async getHabits(includeInactive: boolean = false): Promise<Habit[]> {
+    return request<Habit[]>(`/habits/?include_inactive=${includeInactive}`);
+  },
+
+  async createHabit(payload: HabitCreateRequest): Promise<Habit> {
+    return request<Habit>('/habits/', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async updateHabit(habitId: number, payload: Partial<HabitCreateRequest> & { is_active?: boolean }): Promise<Habit> {
+    return request<Habit>(`/habits/${habitId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async deleteHabit(habitId: number): Promise<void> {
+    return request<void>(`/habits/${habitId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async logHabit(habitId: number, payload: HabitLogRequest): Promise<any> {
+    return request<any>(`/habits/${habitId}/log`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getHabitAdherenceSummary(): Promise<HabitAdherenceSummary> {
+    return request<HabitAdherenceSummary>('/habits/summary/adherence');
+  },
+
+  // Personalized Preventive Plans
+  async getActivePlan(): Promise<PreventivePlan> {
+    return request<PreventivePlan>('/plans/active');
+  },
+
+  async regeneratePlan(): Promise<PreventivePlan> {
+    return request<PreventivePlan>('/plans/generate', {
+      method: 'POST',
+    });
+  },
+
+  async adoptPlanItem(itemId: number, payload: { schedule_time?: string; frequency?: string } = {}): Promise<Habit> {
+    return request<Habit>(`/plans/items/${itemId}/adopt`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  // Subjective Wellbeing Check-Ins
+  async submitWellbeingCheckIn(payload: WellbeingCheckInRequest): Promise<WellbeingCheckIn> {
+    return request<WellbeingCheckIn>('/wellbeing/', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getTodayWellbeing(): Promise<WellbeingCheckIn | null> {
+    return request<WellbeingCheckIn | null>('/wellbeing/today');
+  },
+
+  async getWellbeingTrends(windowDays: number = 14): Promise<WellbeingTrendsSummary> {
+    return request<WellbeingTrendsSummary>(`/wellbeing/trends?window_days=${windowDays}`);
   },
 
   // Data Export & Deletion

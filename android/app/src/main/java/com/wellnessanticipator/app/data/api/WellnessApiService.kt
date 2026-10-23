@@ -64,4 +64,34 @@ interface WellnessApiService {
     // Recommendations
     @GET("recommendations/")
     suspend fun getRecommendations(): Response<RecommendationsResponse>
+
+    // Habits & Consistency
+    @GET("habits/")
+    suspend fun getHabits(@Query("include_inactive") includeInactive: Boolean = false): Response<List<HabitResponse>>
+
+    @POST("habits/")
+    suspend fun createHabit(@Body request: HabitCreateRequest): Response<HabitResponse>
+
+    @POST("habits/{id}/log")
+    suspend fun logHabit(@Path("id") id: Int, @Body request: HabitLogRequest): Response<Unit>
+
+    @GET("habits/summary/adherence")
+    suspend fun getHabitAdherence(): Response<HabitAdherenceSummary>
+
+    // Preventive Plans
+    @GET("plans/active")
+    suspend fun getActivePlan(): Response<PreventivePlanResponse>
+
+    @POST("plans/generate")
+    suspend fun regeneratePlan(): Response<PreventivePlanResponse>
+
+    @POST("plans/items/{id}/adopt")
+    suspend fun adoptPlanItem(@Path("id") id: Int, @Body request: AdoptPlanItemRequest): Response<HabitResponse>
+
+    // Subjective Wellbeing
+    @POST("wellbeing/")
+    suspend fun submitWellbeing(@Body request: WellbeingCheckInRequest): Response<WellbeingCheckInResponse>
+
+    @GET("wellbeing/today")
+    suspend fun getTodayWellbeing(): Response<WellbeingCheckInResponse?>
 }

@@ -31,4 +31,7 @@ class User(Base):
     measurements = relationship("Measurement", back_populates="user", cascade="all, delete-orphan")
     activities = relationship("ActivityRecord", back_populates="user", cascade="all, delete-orphan")
     sleep_records = relationship("SleepRecord", back_populates="user", cascade="all, delete-orphan")
+    habits = relationship("Habit", back_populates="user", cascade="all, delete-orphan")
+    preventive_plans = relationship("PreventivePlan", back_populates="user", cascade="all, delete-orphan")
+    wellbeing_checkins = relationship("WellbeingCheckIn", back_populates="user", cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog", back_populates="user")

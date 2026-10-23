@@ -257,3 +257,95 @@ data class RecommendationsResponse(
     @SerializedName("recommendations_count") val recommendationsCount: Int,
     val recommendations: List<PreventiveRecommendation>
 )
+
+// Daily Habits & Adherence Models
+data class HabitResponse(
+    val id: Int,
+    @SerializedName("user_id") val userId: String,
+    val title: String,
+    val category: String,
+    @SerializedName("target_action") val targetAction: String,
+    val frequency: String,
+    @SerializedName("target_value") val targetValue: Double?,
+    @SerializedName("target_unit") val targetUnit: String?,
+    @SerializedName("schedule_time") val scheduleTime: String?,
+    val difficulty: String,
+    @SerializedName("is_active") val isActive: Boolean,
+    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("completed_today") val completedToday: Boolean,
+    @SerializedName("today_status") val todayStatus: String?,
+    @SerializedName("seven_day_consistency_pct") val sevenDayConsistencyPct: Double
+)
+
+data class HabitCreateRequest(
+    val title: String,
+    val category: String = "PHYSICAL_ACTIVITY",
+    @SerializedName("target_action") val targetAction: String,
+    val frequency: String = "DAILY",
+    @SerializedName("schedule_time") val scheduleTime: String? = null,
+    val difficulty: String = "ACHIEVABLE"
+)
+
+data class HabitLogRequest(
+    @SerializedName("log_date") val logDate: String? = null,
+    val status: String,
+    @SerializedName("value_achieved") val valueAchieved: Double? = null,
+    val notes: String? = null
+)
+
+data class HabitAdherenceSummary(
+    @SerializedName("total_active_habits") val totalActiveHabits: Int,
+    @SerializedName("completed_today_count") val completedTodayCount: Int,
+    @SerializedName("today_completion_rate") val todayCompletionRate: Double,
+    @SerializedName("seven_day_consistency_rate") val sevenDayConsistencyRate: Double,
+    @SerializedName("thirty_day_consistency_rate") val thirtyDayConsistencyRate: Double,
+    @SerializedName("supportive_feedback") val supportiveFeedback: String,
+    @SerializedName("recovery_recommendation") val recoveryRecommendation: String?
+)
+
+// Preventive Plan Models
+data class PlanItemResponse(
+    val id: Int,
+    @SerializedName("plan_id") val planId: Int,
+    val category: String,
+    val title: String,
+    @SerializedName("target_action") val targetAction: String,
+    val rationale: String,
+    @SerializedName("guideline_source") val guidelineSource: String,
+    val difficulty: String,
+    @SerializedName("is_adopted_into_habit") val isAdoptedIntoHabit: Boolean,
+    @SerializedName("adopted_habit_id") val adoptedHabitId: Int?
+)
+
+data class PreventivePlanResponse(
+    val id: Int,
+    @SerializedName("user_id") val userId: String,
+    val title: String,
+    val status: String,
+    @SerializedName("review_period_days") val reviewPeriodDays: Int,
+    val items: List<PlanItemResponse>
+)
+
+data class AdoptPlanItemRequest(
+    @SerializedName("schedule_time") val scheduleTime: String? = "Daily Routine",
+    val frequency: String = "DAILY"
+)
+
+// Subjective Wellbeing Check-In Models
+data class WellbeingCheckInRequest(
+    @SerializedName("recorded_date") val recordedDate: String? = null,
+    @SerializedName("mood_score") val moodScore: Int,
+    @SerializedName("stress_level") val stressLevel: String,
+    @SerializedName("energy_level") val energyLevel: Int,
+    @SerializedName("reflection_notes") val reflectionNotes: String? = null
+)
+
+data class WellbeingCheckInResponse(
+    val id: Int,
+    @SerializedName("user_id") val userId: String,
+    @SerializedName("recorded_date") val recordedDate: String,
+    @SerializedName("mood_score") val moodScore: Int,
+    @SerializedName("stress_level") val stressLevel: String,
+    @SerializedName("energy_level") val energyLevel: Int,
+    @SerializedName("reflection_notes") val reflectionNotes: String?
+)
