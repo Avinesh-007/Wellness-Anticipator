@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: wellness_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PROJECT_NAME=Wellness Anticipator API
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - SECRET_KEY=dev-secret-key-for-local-docker-compose-minimum-32-chars
+      - DATABASE_URL=sqlite:///./wellness_anticipator.db
+      - BACKEND_CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./backend/wellness_anticipator.db:/app/wellness_anticipator.db
+    restart: unless-stopped

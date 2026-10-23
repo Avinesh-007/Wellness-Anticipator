@@ -1,0 +1,41 @@
+{
+  "audit_timestamp": "2026-10-23T08:30:19.354719+00:00",
+  "dataset_name": "Behavioral Risk Factor Surveillance System (BRFSS)",
+  "dataset_year": "2021",
+  "official_source": "Centers for Disease Control and Prevention (CDC)",
+  "license_status": "Public Domain (17 U.S.C. \u00a7 105)",
+  "sample_size": 5000,
+  "target_variable": "DIABETE4",
+  "target_distribution": {
+    "raw_counts": {
+      "3": 4034,
+      "1": 866,
+      "4": 100
+    },
+    "positive_at_risk_count": 966,
+    "negative_non_diabetic_count": 4034,
+    "prevalence_rate": 0.1932,
+    "class_imbalance_ratio": "4.18 : 1"
+  },
+  "feature_mapping_verified": true,
+  "missing_data_summary": {
+    "age (_AGEG5YR)": 18.8,
+    "sex (_SEX)": 0.0,
+    "bmi (_BMI5)": 0.0,
+    "high_bp (BPHIGH4)": 1.0,
+    "high_chol (TOLDHI2)": 0.0,
+    "physical_inactivity (_TOTINDA)": 0.0,
+    "smoking_status (_SMOKER3)": 0.0
+  },
+  "leakage_detected": false,
+  "leakage_variables_found": [],
+  "epistemological_distinction_documented": true,
+  "clinical_use_case_supported": true,
+  "limitations": [
+    "Cross-sectional survey design: Measures current prevalence/risk clustering, not prospective longitudinal 10-year incidence.",
+    "Self-reported biometrics: Self-reported BMI is subject to systematic downward bias (~1.2 kg/m\u00b2 lower than measured weight).",
+    "Absence of laboratory venous glucose: Labels reflect participant-recalled physician diagnosis; undiagnosed community cases are labeled as non-diabetic in survey.",
+    "Population boundary: Limited to non-institutionalized US civilian adults aged 18+."
+  ],
+  "recommendation": "Approved for compact-feature population screening baseline. Must be calibrated using Brier score and clearly communicated as preventive risk screening, not clinical diagnosis."
+}
