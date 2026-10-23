@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wellness-anticipator.org/schemas/risk_assessment.json",
+  "title": "RiskAssessmentContract",
+  "description": "Standardized schema for explainable disease screening evaluations.",
+  "type": "object",
+  "required": [
+    "assessment_id",
+    "assessment_type",
+    "risk_score",
+    "risk_tier",
+    "model_version",
+    "contributing_factors",
+    "limitations"
+  ],
+  "properties": {
+    "assessment_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "assessment_type": {
+      "type": "string",
+      "enum": ["DIABETES_T2D", "CARDIOVASCULAR_ASCVD"]
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Calibrated statistical probability of screening positive."
+    },
+    "risk_tier": {
+      "type": "string",
+      "enum": ["LOW_RISK", "INCREASED_RISK", "MODERATE_RISK", "HIGH_RISK"]
+    },
+    "model_version": {
+      "type": "string"
+    },
+    "clinical_score": {
+      "type": "object",
+      "properties": {
+        "tool_name": { "type": "string" },
+        "points": { "type": "integer" },
+        "max_points": { "type": "integer" },
+        "threshold_increased_risk": { "type": "integer" }
+      }
+    },
+    "contributing_factors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["feature", "impact", "relative_contribution", "explanation"],
+        "properties": {
+          "feature": { "type": "string" },
+          "impact": { "type": "string", "enum": ["POSITIVE_RISK", "PROTECTIVE", "NEUTRAL"] },
+          "relative_contribution": { "type": "number" },
+          "explanation": { "type": "string" }
+        }
+      }
+    },
+    "limitations": {
+      "type": "object",
+      "required": ["intended_population", "uncertainty_disclosure", "clinical_escalation"],
+      "properties": {
+        "intended_population": { "type": "string" },
+        "uncertainty_disclosure": { "type": "string" },
+        "clinical_escalation": { "type": "string" }
+      }
+    }
+  }
+}

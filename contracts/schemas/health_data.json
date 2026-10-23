@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wellness-anticipator.org/schemas/health_data.json",
+  "title": "CanonicalHealthDataRecords",
+  "description": "Standardized cross-platform schemas for biometric measurements, activity, and sleep telemetry.",
+  "definitions": {
+    "MeasurementRecord": {
+      "type": "object",
+      "required": ["metric_type", "value_numeric", "unit", "measured_at", "source"],
+      "properties": {
+        "metric_type": {
+          "type": "string",
+          "enum": ["BLOOD_PRESSURE", "FASTING_GLUCOSE", "HBA1C", "WEIGHT", "RESTING_HEART_RATE"]
+        },
+        "value_numeric": {
+          "type": "number",
+          "description": "Primary measured value (e.g., SBP in mmHg, Glucose in mg/dL, Weight in kg)"
+        },
+        "secondary_numeric": {
+          "type": ["number", "null"],
+          "description": "Secondary measured value (e.g., DBP in mmHg for Blood Pressure)"
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["mmHg", "mg/dL", "mmol/L", "%", "kg", "lbs", "bpm"]
+        },
+        "measured_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["MANUAL_ENTRY", "ANDROID_HEALTH_CONNECT", "DEVICE_BLE", "LAB_REPORT"]
+        },
+        "quality_status": {
+          "type": "string",
+          "enum": ["VALID", "OUT_OF_BOUNDS", "SUSPECT_DUPLICATE"],
+          "default": "VALID"
+        },
+        "notes": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "ActivityRecord": {
+      "type": "object",
+      "required": ["recorded_date", "step_count", "source"],
+      "properties": {
+        "recorded_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "step_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 150000
+        },
+        "active_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440
+        },
+        "active_calories_kcal": {
+          "type": "number",
+          "minimum": 0
+        },
+        "distance_meters": {
+          "type": "number",
+          "minimum": 0
+        },
+        "source": {
+          "type": "string",
+          "enum": ["ANDROID_HEALTH_CONNECT", "MANUAL_ENTRY"]
+        }
+      }
+    },
+    "SleepRecord": {
+      "type": "object",
+      "required": ["sleep_date", "start_time", "end_time", "duration_minutes", "source"],
+      "properties": {
+        "sleep_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "start_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1440
+        },
+        "deep_minutes": {
+          "type": ["integer", "null"]
+        },
+        "rem_minutes": {
+          "type": ["integer", "null"]
+        },
+        "light_minutes": {
+          "type": ["integer", "null"]
+        },
+        "quality_rating": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 5
+        },
+        "source": {
+          "type": "string",
+          "enum": ["ANDROID_HEALTH_CONNECT", "MANUAL_ENTRY"]
+        }
+      }
+    }
+  }
+}
