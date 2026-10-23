@@ -1,0 +1,84 @@
+{
+  "evaluation_timestamp": "2026-10-23T08:46:24.749409+00:00",
+  "test_cohort_size": 1000,
+  "test_prevalence": 0.193,
+  "baseline_model": {
+    "version": "v1.0.0-lr-baseline",
+    "algorithm": "LogisticRegression(C=1.0, class_weight='balanced') + CalibratedClassifierCV(5-fold sigmoid)",
+    "calibrated": true,
+    "calibration_method": "Platt Scaling (5-Fold Cross-Validation Sigmoid)",
+    "artifact_path": "ml/models/serialized/diabetes_baseline_lr.joblib",
+    "sha256": "02a3d9057e3cb386b9997328b0553fee727999efd5daa43f1dfac89e7cbebafb",
+    "metrics": {
+      "auroc": 0.7309,
+      "auprc": 0.404,
+      "brier_score": 0.138,
+      "sensitivity": 0.1192,
+      "specificity": 0.9765,
+      "positive_predictive_value": 0.5476,
+      "operating_threshold": 0.5,
+      "confusion_matrix": {
+        "true_negatives": 788,
+        "false_positives": 19,
+        "false_negatives": 170,
+        "true_positives": 23
+      },
+      "calibration_curve": {
+        "prob_true": [
+          0.1032,
+          0.2943,
+          0.4353,
+          0.6364,
+          1.0
+        ],
+        "prob_pred": [
+          0.1054,
+          0.2825,
+          0.4771,
+          0.6523,
+          0.8073
+        ]
+      }
+    },
+    "is_active": true
+  },
+  "comparison_model": {
+    "version": "v1.0.0-gbt-comparison",
+    "algorithm": "HistGradientBoostingClassifier(class_weight='balanced') + CalibratedClassifierCV(5-fold sigmoid)",
+    "calibrated": true,
+    "calibration_method": "Platt Scaling (5-Fold Cross-Validation Sigmoid)",
+    "artifact_path": "ml/models/serialized/diabetes_comparison_gbt.joblib",
+    "sha256": "4a57ba0a23e72916d5bbe472f00043886ddf19103dfde4799f50149e322821fa",
+    "metrics": {
+      "auroc": 0.7299,
+      "auprc": 0.4216,
+      "brier_score": 0.1371,
+      "sensitivity": 0.1036,
+      "specificity": 0.9814,
+      "positive_predictive_value": 0.5714,
+      "operating_threshold": 0.5,
+      "confusion_matrix": {
+        "true_negatives": 792,
+        "false_positives": 15,
+        "false_negatives": 173,
+        "true_positives": 20
+      },
+      "calibration_curve": {
+        "prob_true": [
+          0.099,
+          0.2862,
+          0.4949,
+          1.0
+        ],
+        "prob_pred": [
+          0.1072,
+          0.2808,
+          0.4764,
+          0.6339
+        ]
+      }
+    },
+    "is_active": false
+  },
+  "clinical_epistemology_statement": "Models predict current screening positivity / high-risk metabolic phenotype on cross-sectional survey data. They do not predict longitudinal 10-year prospective disease incidence."
+}
